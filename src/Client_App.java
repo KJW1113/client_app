@@ -1,16 +1,19 @@
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Arrays;
 
 import static com.sun.java.accessibility.util.AWTEventMonitor.addWindowListener;
-//test
- 
+
+
 public class Client_App {
     public static JFrame frame;
     private JPanel profilePanel;
@@ -21,6 +24,9 @@ public class Client_App {
     private int loginResult=2;
     private String firstCheck ="1";
     private JTextField textID = new JTextField(10);
+//    private HintTextFieldID textID = new HintTextFieldID(" ID");
+//    JPasswordField textPW = new JPasswordField(10);
+//    private HintTextFieldPW textPW = new HintTextFieldPW(" PW");
     
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
@@ -51,7 +57,7 @@ public class Client_App {
         frame.setBounds(100, 100, 1000, 706);
 		frame.getContentPane().setLayout(null);
 
-		ImagePanel welcomePanel = new ImagePanel(new ImageIcon("./img/backgroundall.png").getImage());
+		ImagePanel welcomePanel = new ImagePanel(new ImageIcon("./img/LoginBackground2.png").getImage());
 
 //		JPanel profilePanel, tablePanel, homePanel;
 
@@ -149,16 +155,18 @@ public class Client_App {
 		frame.getContentPane().add(homePanel);
 		homePanel.setLayout(null);
 		homePanel.setVisible(false);
+//		homePanel.setSize(welcomePanel.getWidth(), welcomePanel.getHeight());
 		
 		JLabel main = new JLabel("Job Time");
 		main.setVerticalAlignment(SwingConstants.TOP);
-        main.setBounds(180,36,167,50);
+//        main.setBounds(170,36,167,50);
+        main.setBounds(170,66,167,50);
         main.setFont(new Font("Vivaldi",Font.BOLD,35));
         homePanel.add(main);
         
         RoundedButton btnNewButton = new RoundedButton("메신저");
         btnNewButton.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
-        btnNewButton.setBounds(165, 100, 170, 50);
+        btnNewButton.setBounds(160, 140, 170, 50);
         homePanel.add(btnNewButton);
         btnNewButton.addActionListener(new ActionListener() {
             @Override
@@ -169,7 +177,7 @@ public class Client_App {
         
         RoundedButton btnNewButton_1 = new RoundedButton("게시판");
         btnNewButton_1.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
-        btnNewButton_1.setBounds(165, 170, 170, 50);
+        btnNewButton_1.setBounds(160, 210, 170, 50);
         homePanel.add(btnNewButton_1);
         btnNewButton_1.addActionListener(new ActionListener() {
 			
@@ -182,7 +190,7 @@ public class Client_App {
 
         RoundedButton btnNewButton_2 = new RoundedButton("식단표");
         btnNewButton_2.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
-        btnNewButton_2.setBounds(165, 240, 170, 50);
+        btnNewButton_2.setBounds(160, 280, 170, 50);
         homePanel.add(btnNewButton_2);
         btnNewButton_2.addActionListener(new ActionListener() {
 			
@@ -199,7 +207,7 @@ public class Client_App {
         
         RoundedButton btnNewButton_3 = new RoundedButton("채팅서버(관리자용)");
         btnNewButton_3.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
-        btnNewButton_3.setBounds(165, 310, 170, 50);
+        btnNewButton_3.setBounds(160, 350, 170, 50);
 
         homePanel.add(btnNewButton_3);
         btnNewButton_3.addActionListener(new ActionListener() {
@@ -217,13 +225,28 @@ public class Client_App {
 //        tablePanel.setLayout(new FlowLayout());
         tablePanel.setBounds(0,0,958,551);
         String[][] data = customer.getCustomers();
-        String[] headers = new String[]{"ID","UserName","Password","Name","Phone","Gender","Age","Note"};
+//        String[] headers = new String[]{"ID","UserName","Password","Name","Phone","Gender","Age","Note"};
+        String[] headers = new String[]{"UserName","Password","Name","Phone","Gender","Age","Note"};
         JTable table = new JTable(data,headers);
 //        table.setModel(new DefaultTableModel(data,headers));
         table.setBounds(0,300,800,400);
         table.setRowHeight(30);
         table.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
         table.setAlignmentX(0);
+        
+        table.setModel(new DefaultTableModel(data, headers) {
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		});
+        
+        
+        table.getTableHeader().setReorderingAllowed(false);   //table 사이즈,내용 수정 불가
+        table.getTableHeader().setResizingAllowed(false);
+        
+        table.getTableHeader().setBackground(new Color(80, 188, 223));
+        table.getTableHeader().setForeground(new Color(255,255,255));
+        
         table.setSize(800,400);
         //사이즈를 정했지만 안정해지는경우도있으므로 setPreferredScrollableViewportSize 로 두번크기설정
         table.setPreferredScrollableViewportSize(new Dimension(800,400));
@@ -385,13 +408,13 @@ public class Client_App {
 
                 frame.setBounds(100,100,958,721);
                 int row1=table.getSelectedRow();
-                Object id= table.getValueAt(row1, 0);
-                Object userName= table.getValueAt(row1, 1);
-                Object Name =table.getValueAt(row1, 3);
-                Object Phone =table.getValueAt(row1, 4);
-                Object Gender =table.getValueAt(row1, 5);
-                Object Age =table.getValueAt(row1, 6);
-                Object Note =table.getValueAt(row1, 7);
+//                Object id= table.getValueAt(row1, 0);
+                Object userName= table.getValueAt(row1, 0);
+                Object Name =table.getValueAt(row1, 2);
+                Object Phone =table.getValueAt(row1, 3);
+                Object Gender =table.getValueAt(row1, 4);
+                Object Age =table.getValueAt(row1, 5);
+                Object Note =table.getValueAt(row1, 6);
 
                 JPanel updatePanel = new JPanel();
                 updatePanel.setBounds(0,0,958,751);
@@ -419,7 +442,7 @@ public class Client_App {
                 phone.setFont(new Font("나눔바른고딕 Light",Font.BOLD,20));
                 phone.setBounds(230,180,85,40);
 
-                JTextField textPhone = new JTextField(10);
+                JTextField textPhone = new JTextField("휴대전화",10);
                 textPhone.setBounds(320,180,140,40);
                 textPhone.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
                 textPhone.setText((String)Phone);
@@ -525,9 +548,9 @@ public class Client_App {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row1= table.getSelectedRow();
-                Object deleteId=table.getValueAt(row1,0);
-                Object deleteUsername=table.getValueAt(row1,1);
-                customer.deleteCustomer(deleteId,deleteUsername);
+//                Object deleteId=table.getValueAt(row1,0);
+                Object deleteUsername=table.getValueAt(row1,0);
+                customer.deleteCustomer(deleteUsername);
                 
                 table.setModel(new DefaultTableModel(customer.getCustomers(),headers));
 
@@ -635,17 +658,20 @@ public class Client_App {
 
 
       
-        //************************************* LOGIN 화면 ******************************************
+        //************************************* LOGIN 로그인 화면 ******************************************
 
         //로그인화면 ID label
         //로그인화면 PW label
         //로그인화면 ID textField
        
+        JLabel id = new JLabel("아이디");
+        id.setFont(new Font("나눔바른고딕 Light",Font.PLAIN,15));
+        id.setBounds(93,190,85,40);
 
-        textID.setFont(new Font("휴먼고딕", Font.PLAIN, 18));
-        textID.setBounds(140,250,220,35);
+        textID.setFont(new Font("나눔바른고딕 Light", Font.PLAIN, 18));
+//        textID.setBounds(87,280,300,47);
+        textID.setBounds(88,225,315,47);
         
-      //------------------- ID힌트 -작업중
         textID.addFocusListener(new FocusListener() {
 			
 			@Override
@@ -672,9 +698,54 @@ public class Client_App {
 		});
         
         //로그인화면 PW textField
+
+        JLabel pw = new JLabel("비밀번호");
+        pw.setFont(new Font("나눔바른고딕 Light",Font.PLAIN,15));
+        pw.setBounds(93,285,85,40);
+        
         JPasswordField textPW = new JPasswordField(10);
-        textPW.setFont(new Font("굴림", Font.PLAIN, 18));
-        textPW.setBounds(140,300,220,35);
+        textPW.setFont(new Font("나눔바른고딕 Light", Font.PLAIN, 18));
+//        textPW.setBounds(140,300,220,35);
+        textPW.setBounds(88,320,315,47);
+
+
+        
+        char passwordChar = textPW.getEchoChar();
+        textPW.setEchoChar((char)0);
+        textPW.setText("PW");
+        textPW.addFocusListener(new FocusListener() {
+			
+			@Override
+			public void focusLost(FocusEvent e) {
+				// TODO Auto-generated method stub
+				if(textPW.getText().equals("")) {
+					textPW.setText("PW");
+					textPW.setEchoChar(passwordChar);
+				} else {
+					
+				}
+			}
+			
+			
+//			@Override
+//			public void focusGained(FocusEvent e) {
+//				// TODO Auto-generated method stub
+//				textPW.setText("");
+//				textPW.setEchoChar(passwordChar);
+//			}
+			@Override
+			public void focusGained(FocusEvent e) {
+				// TODO Auto-generated method stub
+				if(textPW.getText().equals("PW")) {
+					textPW.setText("");
+					textPW.setEchoChar(passwordChar);
+				} else {
+					
+				}
+			}
+		});
+        
+
 
         //로그인화면 Login Button
         
@@ -684,9 +755,11 @@ public class Client_App {
 //        logBtn.setBounds(500,420,170,45);
         
         RoundedButton logBtn = new RoundedButton("LogIn");
-        logBtn.setBounds(165, 350, 170, 45);
-        
+        logBtn.setFont(new Font("나눔바른고딕 Light",Font.BOLD,15));
+        logBtn.setBounds(153, 400, 185, 50);
+
         logBtn.addActionListener(new ActionListener() {
+
         	@Override
         	public void actionPerformed(ActionEvent e) {
 
@@ -736,45 +809,13 @@ public class Client_App {
         			JOptionPane.showMessageDialog(null, "로그인 실패");
         		}
         	}
-        	/*
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(textID.getText().equals("1")&&Arrays.equals(textPW.getPassword(),"1".toCharArray())){
-                    current_id = "1";
-                    System.out.println("Account with no profile");
-                    welcomePanel.setVisible(false);
-                    profilePanel.setVisible(true);
 
-                }
 
-                else if(textID.getText().equals("2")&&Arrays.equals(textPW.getPassword(),"2".toCharArray())){
-                    current_id = "2";
-                    System.out.println("Account with profile");
-                    welcomePanel.setVisible(false);
-                    homePanel.setVisible(true);
-
-                }
-                else if(textID.getText().equals("3")&&Arrays.equals(textPW.getPassword(),"3".toCharArray())){
-                    current_id = "3";
-                    System.out.println("Account with profile");
-                    welcomePanel.setVisible(false);
-                    homePanel.setVisible(true);
-
-                }
-                else if(textID.getText().equals("admin")&&Arrays.equals(textPW.getPassword(),"admin".toCharArray())){
-                    current_id = "admin";
-                    System.out.println("administrator");
-                    welcomePanel.setVisible(false);
-                    tablePanel.setVisible(true);
-
-                }
-                else {
-                    JOptionPane.showMessageDialog(null,"login fail");
-                }
-            }*/
         });
 
+        welcomePanel.add(id);
         welcomePanel.add(textID);
+        welcomePanel.add(pw);
         welcomePanel.add(textPW);
         welcomePanel.add(logBtn);
    //****************************************************************************************
@@ -789,30 +830,31 @@ public class Client_App {
       
       
     //************************************* 상단 메뉴바 ******************************************
-    public JMenuBar menuBar(JPanel panel) {
+    	public JMenuBar menuBar(ImagePanel panel) {
     	
-
-//		ImagePanel welcomePanel = new ImagePanel(new ImageIcon("./img/background.jpg").getImage());
-//		frame.getContentPane().add(welcomePanel);
-
     	
         JMenuBar bar = new JMenuBar();
         JMenu fileMenu = new JMenu("File");
+        fileMenu.setFont(new Font("나눔바른고딕 Light",Font.BOLD,13));
         JMenu aboutMenu = new JMenu("About");
+        aboutMenu.setFont(new Font("나눔바른고딕 Light",Font.BOLD,13));
         
         bar.add(fileMenu);
         bar.add(aboutMenu);
     
         
         JMenuItem openFile = new JMenuItem("Open");
+        openFile.setFont(new Font("나눔바른고딕 Light",Font.BOLD,13));
         JMenuItem exit = new JMenuItem("Exit"); 
+        exit.setFont(new Font("나눔바른고딕 Light",Font.BOLD,13));
         JMenuItem logout = new JMenuItem("logout");
+        logout.setFont(new Font("나눔바른고딕 Light",Font.BOLD,13));
         
         fileMenu.add(openFile);
         fileMenu.add(logout);
         fileMenu.addSeparator();
         fileMenu.add(exit);
-        
+         
 
         exit.addActionListener(new ActionListener() {
             @Override
@@ -820,7 +862,7 @@ public class Client_App {
                 System.exit(0);
             }
         });
-        
+                
         logout.addActionListener(new ActionListener() {
 			
 			@Override
@@ -829,12 +871,14 @@ public class Client_App {
 				homePanel.setVisible(false);
 				tablePanel.setVisible(false);
 				panel.setVisible(true);
-				frame.setBounds(100,100,528,482);
+//                frame.setBounds(100, 100, 1000, 706);
 			}
 		});
 
         return bar;
     }
+
+
 }
 
 // 패널에 Image를 쉽게 넣기위해 생성한 ImagePanel
